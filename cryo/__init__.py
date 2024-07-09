@@ -1,3 +1,7 @@
+from ._builtin_helpers import _set_class_on_builtin
+
+__all__ = ["ImmutableError", "Frozen", "freeze"]
+
 class ImmutableError(Exception):
     pass
 
@@ -27,5 +31,8 @@ def freeze(obj: object, *, freeze_attribute_assignment=True, freeze_item_assignm
                         "_Frozen__freeze_item_assignment": freeze_item_assignment})
     frozen_type.__repr__ = lambda self: f"<Frozen({obj_type.__repr__(self)})>"
 
-    obj.__class__ = frozen_type
+    if isinstance(obj, (list, set, dict)):
+        _set_class_on_3builtin(obj, frozen_type)
+    else:
+        obj.__class__ = frozen_type
     return obj
